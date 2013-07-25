@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+        <link href="jquery-mobile/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>
+<script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
+<script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Sorteo Xview</title>
+    </head>
+    <body>
+        <script type="text/javascript">
+
+                    $(function() {
+                        $('#submit').click(function() {
+                            onFormSubmit();
+                        });
+
+                        $('#newForm').click(function() {
+                            $('#name, #dni, #email').val('');
+                            $('input[type=radio]:checked').each(function() {
+                                this.checked = false;
+                                $("input[type=radio]").checkboxradio("refresh");
+                            })
+                        });
+
+                        // Cordova is ready
+                        //
+                        function onFormSubmit() {
+                            var errors = false;
+                            if ($('#name').val() == '') {
+                                alert('Por favor ingrese su nombre');
+                                errors = true;
+                            }
+                            if ($('#dni').val() == '') {
+                                alert('Por favor ingrese su D.N.I.')
+                                errors = true;
+                            }
+                            if ($('#email').val() == '') {
+                                alert('Por favor ingrese su email')
+                                errors = true;
+                            }
+                            if ($('input[name=prize]:checked').length == 0) {
+                                alert('Por favor elija un premio')
+                                errors = true;
+                            }
+                            if (!(errors === true)) {
+                                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+                            }
+                        }
+
+                        function gotFS(fileSystem) {
+                            fileSystem.root.getFile("concursantes.txt", {create: true, exclusive: false}, gotFileEntry, fail);
+                        }
+
+                        function gotFileEntry(fileEntry) {
+                            fileEntry.createWriter(gotFileWriter, fail);
+                        }
+
+                        function gotFileWriter(writer) {
+                            var userName = $('#name').val();
+                            var dni = $('#dni').val();
+                            var email = $('#email').val();
+                            var prize = $('input[name=prize]:checked').val();
+                            var wantsNotifications = $('input[name=notifications]:checked').val();
+                            if (typeof wantsNotifications === 'undefined') {
+                                wantsNotifications = 'si';
+                            };
+                            /*$('input[name="prize"]').each()*/
+                            writer.onwriteend = function(evt) {
+                                $('#formSuccess').click();
+                            }
+                            writer.seek(writer.length);
+                            writer.write(userName+', ' +dni+', '+email+', '+prize+', '+wantsNotifications+';\n');
+                        }
+
+                        function fail(error) {
+                            console.log("Ha ocurrido un error. Por favor cierre la aplicacion y vuelva a intentarlo");
+                        }
+                    });
+        </script>
+<div data-role="page" id="inicio" data-theme="c">
+  <div data-role="header" data-theme="b">
+    <div align="center"><h1><img src="jquery-mobile/img/lg.png"></h1></div>
+  </div>
+  <div data-role="content" data-theme="d">
+    <div align="center"><img src="jquery-mobile/img/plantilla-productos.png"></div>
+    <br>
+    <ul data-role="listview" data-theme="b">
+      <li><a href="#page1" data-transition="pop">Siguiente</a></li>
+    </ul>
+  </div>
+</div>
+<!-- INICIO -->
+
+<div data-role="page" id="page1" data-theme="c">
+  <div data-role="header" data-theme="b"> <a class="ui-btn-left ui-btn ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-b" data-icon="arrow-l" href="#inicio"> <span class="ui-btn-inner ui-btn-corner-all"> <span class="ui-btn-text">Inicio</span> <span class="ui-icon ui-icon-arrow-l ui-icon-shadow"></span> </span> </a>
+    <h1>Dejanos tus datos</h1>
+  </div>
+  <div data-role="content" align="center">
+    <label> Nombre y Apellido </label>
+    <input type="text" name="textinput" id="name" value=""  />
+    <label> DNI </label>
+    <input type="number" name="textinput" id="dni" value=""  />
+    <label> Correo </label>
+    <input type="email" name="textinput" id="email" value=""  />
+    <legend>Que premio te gustaria ganar?</legend>
+    <fieldset data-role="controlgroup">
+      <input type="radio" name="prize" id="checkbox1_0" class="custom" value="Proton Pro2" />
+      <label for="checkbox1_0">Proton Pro2</label>
+      <input type="radio" name="prize" id="checkbox1_1" class="custom" value="Proton Alpha" />
+      <label for="checkbox1_1">Proton Alpha</label>
+      <input type="radio" name="prize" id="checkbox1_2" class="custom" value="CrackPad 10" />
+      <label for="checkbox1_2">CrackPad 10</label>
+      <input type="radio" name="prize" id="checkbox1_3" class="custom" value="Passion 10" />
+      <label for="checkbox1_3">Passion 10</label>
+      <input type="radio" name="prize" id="checkbox1_4" class="custom" value="Microboy 10" />
+      <label for="checkbox1_4">Microboy 10</label>
+    </fieldset>
+    <legend>Recibir Novedades</legend>
+    <fieldset data-role="controlgroup">
+      <input type="radio" name="notifications" id="checkbox2_0" class="custom" value="si" />
+      <label for="checkbox2_0">Si</label>
+      <input type="radio" name="notifications" id="checkbox2_1" class="custom" value="no" />
+      <label for="checkbox2_1">No</label>
+    </fieldset>
+    <input type="submit" id="submit" value="Enviar" data-icon="arrow-r" data-theme="b" />
+    <a href="#page2" id="formSuccess" data-transition="pop" style="position:absolute;top:-10000px;"></a>
+  </div>
+  <div data-role="footer" data-theme="b">
+    <h4>© 2002 X-VIEW. Todos los derechos reservados</h4>
+  </div>
+</div>
+<div data-role="page" id="page2" data-theme="c">
+ <div data-role="header" data-theme="b">
+    <div align="center"><h1><img src="jquery-mobile/img/lg.png"></h1></div>
+  </div>
+  <div data-role="content">
+  <h2>Gracias por participar del sorteo.</h2>
+  <p>Mira quien gano en:<p>
+  <div align="left"><img src="jquery-mobile/img/fb_xview.png"></div>
+  <!--<p><a href="http://www.facebook.com/xview.argentina"><h2>facebook.com/xview.argentina</a></h2><p>-->
+  <p>El sorteo se realizara el lunes 29/7/2013. Nos comunicaremos con el ganador via Mail.</p>
+    <br><br>
+    <ul data-role="listview" data-theme="b">
+      <li><a href="#inicio" id="newForm" data-transition="pop">Llenar otro formulario</a></li>
+    </ul>
+    <br><br>
+  </div>
+  <div data-role="footer" data-theme="b">
+    <h4>© 2002 X-VIEW. Todos los derechos reservados</h4>
+  </div>
+</div>
+</html>
